@@ -260,9 +260,9 @@
       img.src = `/api/template/layer/${encodeURIComponent(badgeL.name)}.png`;
     });
 
-    // distância entre o fim do nome e o selo, como está no PSD
+    // distância entre o fim do nome e o selo (fixa no layout padrão; no PSD, a que está nele)
     ctx.font = textFont(name);
-    const gap = badgeL.x - (name.ox + ctx.measureText(name.content).width);
+    const gap = info.badgeGap ?? badgeL.x - (name.ox + ctx.measureText(name.content).width);
     psd = { avatar, name, user, badge: badgeL, gap, defaults: { name: name.content, user: user.content, verified: true, color: name.color, zoom: 1, dx: 0, dy: 0 } };
 
     Object.assign(state, psd.defaults, await fetch('/api/template/state').then((r) => r.json()).catch(() => ({})));

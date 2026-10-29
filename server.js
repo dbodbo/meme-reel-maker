@@ -75,8 +75,8 @@ const writeAtomic = (file, data) => {
 // Camadas do PSD (textos, posições, cores) sem os pixels; o selo vai em /api/template/badge.png
 app.get('/api/template/psd', (_req, res) => {
   try {
-    const { width, height, layers } = loadLayout(PSD, ASSETS);
-    res.json({ width, height, source: existsSync(PSD) ? 'psd' : 'padrao', layers: layers.map(({ png, ...l }) => ({ ...l, hasImage: !!png })) });
+    const { width, height, badgeGap, layers } = loadLayout(PSD, ASSETS);
+    res.json({ width, height, badgeGap, source: existsSync(PSD) ? 'psd' : 'padrao', layers: layers.map(({ png, ...l }) => ({ ...l, hasImage: !!png })) });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }

@@ -84,7 +84,7 @@ main {
 }
 h1 { margin: 0 0 4px; font-size: 18px; }
 
-fieldset { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+fieldset { border: 0; padding: 0; margin: 0; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
 fieldset:disabled { opacity: .45; }
 #textEditor, #barEditor { display: flex; flex-direction: column; gap: 10px; }
 #textEditor[hidden], #barEditor[hidden] { display: none; }
