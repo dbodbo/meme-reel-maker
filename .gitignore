@@ -1,0 +1,13 @@
+node_modules/
+tmp/
+output/
+downloads/
+
+# dados pessoais: nunca versionar
+cookies*.txt
+data/
+.env
+
+# template pessoal (o repositório usa assets/ como padrão)
+Template_Reel.png
+Template_Reel.psd

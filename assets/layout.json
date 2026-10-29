@@ -1,0 +1,10 @@
+{
+  "width": 1080,
+  "height": 1920,
+  "layers": [
+    { "name": "name", "kind": "text", "x": 446, "y": 178, "w": 409, "h": 49, "content": "Seu Nome", "font": "Inter-Regular", "size": 60.99, "color": "#ffffff", "ox": 443.82, "oy": 224.82 },
+    { "name": "user", "kind": "text", "x": 445, "y": 250, "w": 291, "h": 41, "content": "@seuusuario", "font": "Inter-Regular", "size": 41.11, "color": "#ffffff", "ox": 444.53, "oy": 281.57 },
+    { "name": "Verificado", "kind": "pixel", "x": 872, "y": 170, "w": 70, "h": 68 },
+    { "name": "Profile", "kind": "shape", "x": 126, "y": 100, "w": 269, "h": 269, "color": "#8a8a8a" }
+  ]
+}

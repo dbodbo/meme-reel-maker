@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Meme Reel Maker</title>
+  <link rel="stylesheet" href="/fonts/anton/index.css">
+  <link rel="stylesheet" href="/fonts/bebas-neue/index.css">
+  <link rel="stylesheet" href="/fonts/montserrat/800.css">
+  <link rel="stylesheet" href="/fonts/inter/400.css">
+  <link rel="stylesheet" href="/fonts/inter/700.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="tabs" role="tablist">
+    <a href="#editor" role="tab" data-tab="editor">Editor</a>
+    <a href="#template" role="tab" data-tab="template">Criar template</a>
+    <a href="#tutorial" role="tab" data-tab="tutorial">Tutorial</a>
+  </nav>
+
+  <main id="tab-editor">
+    <section class="preview">
+      <div id="stage" class="stage">
+        <video id="video" playsinline loop></video>
+        <canvas id="barLayer"></canvas>
+        <img id="template" src="/template.png" alt="">
+        <canvas id="textLayer"></canvas>
+        <div id="empty" class="empty">Solte um vídeo aqui<br>ou clique em “Escolher vídeo”</div>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <h1>Reel Maker</h1>
+
+      <form id="dlForm" class="row">
+        <input type="url" id="dlUrl" placeholder="Cole o link do Reels" autocomplete="off" required>
+        <button type="submit" id="dlBtn">Baixar</button>
+      </form>
+      <label class="inline">Login (Instagram)
+        <select id="dlBrowser">
+          <option value="">Sem login</option>
+          <option value="chrome">Chrome</option>
+          <option value="firefox">Firefox</option>
+          <option value="brave">Brave</option>
+          <option value="edge">Edge</option>
+          <option value="chromium">Chromium</option>
+        </select>
+      </label>
+
+      <label class="btn primary">
+        Escolher vídeo
+        <input type="file" id="file" accept="video/*" hidden>
+      </label>
+      <p id="filename" class="muted"></p>
+
+      <fieldset id="controls" disabled>
+        <legend>Enquadramento</legend>
+        <label>Zoom <output id="zoomOut"></output>
+          <input type="range" id="zoom" min="0.2" max="4" step="0.01" value="1">
+        </label>
+        <div class="row">
+          <button type="button" id="fit">Ajustar largura</button>
+          <button type="button" id="cover">Preencher</button>
+          <button type="button" id="center">Centralizar</button>
+        </div>
+        <label class="inline">Cor de fundo <input type="color" id="bg" value="#000000"></label>
+        <p class="muted">Arraste o vídeo no preview para mover; roda do mouse para zoom.</p>
+
+        <legend>Corte de tempo</legend>
+        <div class="row">
+          <label>Início (s) <input type="number" id="start" min="0" step="0.1" value="0"></label>
+          <label>Fim (s) <input type="number" id="end" min="0" step="0.1" value="0"></label>
+        </div>
+        <div class="row">
+          <button type="button" id="markStart">Início = atual</button>
+          <button type="button" id="markEnd">Fim = atual</button>
+        </div>
+        <button type="button" id="play">Play / Pause</button>
+      </fieldset>
+
+      <fieldset id="textBox">
+        <legend>Texto</legend>
+        <div class="row">
+          <select id="textList"></select>
+          <button type="button" id="addText">+ Texto</button>
+        </div>
+        <div id="textEditor" hidden>
+          <textarea id="tText" rows="3" placeholder="Digite o texto"></textarea>
+          <label>Fonte
+            <select id="tFont"></select>
+          </label>
+          <label>Tamanho <output id="tSizeOut"></output>
+            <input type="range" id="tSize" min="24" max="260" step="1">
+          </label>
+          <label>Largura máxima <output id="tMaxWOut"></output>
+            <input type="range" id="tMaxW" min="200" max="1080" step="10">
+          </label>
+          <div class="row">
+            <label>Cor <input type="color" id="tFill"></label>
+            <label>Contorno <input type="color" id="tStroke"></label>
+            <label>Espessura <input type="number" id="tStrokeW" min="0" max="40" step="1"></label>
+          </div>
+          <label class="inline">MAIÚSCULAS <input type="checkbox" id="tUpper"></label>
+          <div class="row">
+            <button type="button" id="centerText">Centralizar</button>
+            <button type="button" id="delText">Remover</button>
+          </div>
+          <p class="muted">Arraste o texto no preview para posicionar.</p>
+        </div>
+      </fieldset>
+
+      <fieldset id="barBox">
+        <legend>Barra (tampar parte do vídeo)</legend>
+        <div class="row">
+          <select id="barList"></select>
+          <button type="button" id="addBar">+ Barra</button>
+        </div>
+        <div id="barEditor" hidden>
+          <div class="row">
+            <label>X <input type="number" id="bX" step="1"></label>
+            <label>Y <input type="number" id="bY" step="1"></label>
+          </div>
+          <div class="row">
+            <label>Largura <input type="number" id="bW" min="10" step="1"></label>
+            <label>Altura <input type="number" id="bH" min="10" step="1"></label>
+          </div>
+          <label class="inline">Cor <input type="color" id="bColor" value="#000000"></label>
+          <div class="row">
+            <button type="button" id="barFull">Largura total</button>
+            <button type="button" id="delBar">Remover</button>
+          </div>
+          <p class="muted">Arraste a barra para mover e as alças para redimensionar. Fica acima do vídeo e abaixo do template e dos textos.</p>
+        </div>
+      </fieldset>
+
+      <button type="button" id="export" class="btn primary" disabled>Exportar Reel (MP4)</button>
+      <p id="status" class="muted" role="status"></p>
+      <p id="saved" class="muted"></p>
+    </aside>
+  </main>
+
+  <main id="tab-template" hidden>
+    <section class="preview">
+      <div id="tplStage" class="stage checker">
+        <canvas id="tplCanvas" width="1080" height="1920"></canvas>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <h1>Criar template</h1>
+      <p class="muted">Monte o cabeçalho do Reel: foto de perfil, nome, @usuário e selo de verificado. O layout vem do <code>Template_Reel.psd</code> (se existir na pasta do projeto) ou de um layout padrão. O PNG gerado tem 1080×1920 com fundo transparente.</p>
+      <p id="tplPsd" class="muted" role="status"></p>
+
+      <fieldset id="tplBox" disabled>
+        <legend>Foto de perfil</legend>
+        <label class="btn primary">
+          Escolher foto
+          <input type="file" id="tplPhoto" accept="image/*" hidden>
+        </label>
+        <label>Zoom <output id="tplZoomOut"></output>
+          <input type="range" id="tplZoom" min="1" max="4" step="0.01" value="1">
+        </label>
+        <div class="row">
+          <button type="button" id="tplPhotoReset">Recentralizar</button>
+          <button type="button" id="tplPhotoClear">Remover foto</button>
+        </div>
+        <p class="muted">Arraste a foto dentro do círculo para posicionar; roda do mouse para zoom.</p>
+
+        <legend>Nome e usuário</legend>
+        <label>Nome
+          <input type="text" id="tplName" maxlength="40" autocomplete="off">
+        </label>
+        <label>Usuário
+          <input type="text" id="tplUser" maxlength="40" autocomplete="off">
+        </label>
+        <label class="inline">Selo de verificado <input type="checkbox" id="tplVerified"></label>
+        <label class="inline">Cor do texto <input type="color" id="tplColor" value="#ffffff"></label>
+        <button type="button" id="tplReset">Restaurar valores do PSD</button>
+
+        <legend>Salvar</legend>
+        <div class="row">
+          <button type="button" id="tplDownload" class="primary">Baixar PNG</button>
+          <button type="button" id="tplUse">Usar no editor</button>
+        </div>
+        <p class="muted">“Usar no editor” troca o <code>Template_Reel.png</code> do projeto por este (o anterior vai para <code>data/backups</code>).</p>
+      </fieldset>
+      <p id="tplStatus" class="muted" role="status"></p>
+    </aside>
+  </main>
+
+  <section id="tab-tutorial" class="tutorial" hidden>
+    <h1>Tutorial</h1>
+
+    <h2>Fazer um Reel</h2>
+    <ol>
+      <li><b>Abra a aba Editor.</b></li>
+      <li><b>Coloque o vídeo:</b> cole o link do Reels no campo de cima e clique em <i>Baixar</i> (veja “Baixar pelo link” abaixo). Ou clique em <i>Escolher vídeo</i>, ou arraste o arquivo para o preview.</li>
+      <li><b>Ajuste o vídeo:</b> arraste no preview para mover e use o zoom para aumentar ou diminuir.</li>
+      <li><b>Corte (opcional):</b> dê Play, pare onde quer começar e clique em <i>Início = atual</i>. Faça o mesmo com <i>Fim = atual</i>.</li>
+      <li><b>Texto (opcional):</b> clique em <i>+ Texto</i>, digite e arraste no preview.</li>
+      <li><b>Barra (opcional):</b> clique em <i>+ Barra</i> para tampar uma parte do vídeo (por exemplo, uma legenda antiga). Arraste para mover e puxe as bordas para mudar o tamanho.</li>
+      <li><b>Clique em <i>Exportar Reel (MP4)</i>.</b> O vídeo baixa no navegador e uma cópia fica na pasta <code>output</code>.</li>
+    </ol>
+    <p class="muted">Tudo o que você posiciona (texto, barras, enquadramento) é salvo sozinho. Só o corte de tempo não é.</p>
+
+    <h2>Baixar pelo link</h2>
+    <ol>
+      <li>Cole o link no campo <i>Cole o link do Reels</i> e clique em <i>Baixar</i>. Funciona com Instagram, TikTok, YouTube, Facebook e X.</li>
+      <li>O vídeo abre sozinho no editor. Uma cópia fica na pasta <code>downloads</code>.</li>
+    </ol>
+    <p><b>Instagram:</b> ele quase sempre pede login. Em <i>Login (Instagram)</i> escolha o navegador onde você está logado no Instagram (Chrome, Brave...) e baixe de novo.</p>
+
+    <details>
+      <summary>O download do Instagram deu erro. O que fazer?</summary>
+      <ul>
+        <li><b>Mensagem sobre <code>secretstorage</code>:</b> no terminal, rode <code>pipx inject yt-dlp secretstorage</code>.</li>
+        <li><b>“resposta vazia” ou “Failed to parse JSON”:</b> atualize o downloader com <code>pipx install --force --pip-args="--pre" yt-dlp</code> e tente de novo.</li>
+        <li><b>Ainda não funcionou?</b> Use o <code>cookies.txt</code>: no Chrome, com o Instagram aberto e logado, exporte os cookies com uma extensão como “Get cookies.txt LOCALLY” e salve o arquivo como <code>cookies.txt</code> na pasta do projeto. O programa usa esse arquivo sozinho.</li>
+        <li><b>Atenção:</b> o <code>cookies.txt</code> dá acesso à sua conta. Não compartilhe e, se puder, use uma conta secundária.</li>
+        <li>Se nada der certo, baixe o vídeo de outro jeito e use <i>Escolher vídeo</i>.</li>
+      </ul>
+    </details>
+    <p class="muted">Só na primeira vez: o downloader precisa estar instalado (<code>pipx install yt-dlp</code>).</p>
+
+    <h2>Criar o template (foto, nome e @)</h2>
+    <p>O template é a imagem que fica por cima do vídeo, com sua foto, nome, @usuário e selo de verificado. Para mudar:</p>
+    <ol>
+      <li>Abra a aba <b>Criar template</b>.</li>
+      <li>Clique em <i>Escolher foto</i> e arraste dentro do círculo para enquadrar.</li>
+      <li>Edite o nome e o usuário. Marque ou desmarque o selo de verificado.</li>
+      <li>Clique em <b>Usar no editor</b>. Pronto: os próximos Reels já saem com esse template. (O template antigo fica guardado em <code>data/backups</code>.)</li>
+      <li>Se quiser o arquivo, clique em <b>Baixar PNG</b>.</li>
+    </ol>
+
+    <h2>Se algo não funcionar</h2>
+    <ul>
+      <li><b>Uma aba nova não aparece ou dá erro:</b> o programa precisa ser reiniciado. No terminal onde ele roda, aperte <kbd>Ctrl</kbd>+<kbd>C</kbd> e rode <code>npm start</code> de novo. Depois recarregue a página.</li>
+      <li><b>Para abrir o programa:</b> terminal na pasta do projeto, <code>npm start</code>, e acesse <code>http://localhost:3000</code>.</li>
+    </ul>
+  </section>
+
+  <script src="app.js"></script>
+  <script src="template.js"></script>
+  <script src="tabs.js"></script>
+</body>
+</html>
